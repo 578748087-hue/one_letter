@@ -1,0 +1,31 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/compose/compose",
+    "pages/stationery/stationery",
+    "pages/mailbox/mailbox",
+    "pages/preview/preview",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#fdfbf7",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "写信",
+    "backgroundColor": "#fdfbf7",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#9a9690",
+    "selectedColor": "#7a8770",
+    "backgroundColor": "#fffdf9",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/mailbox/mailbox", "text": "信箱" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

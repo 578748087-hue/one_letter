@@ -1,0 +1,21 @@
+page {
+  min-height: 100%;
+  background: #fdfbf7;
+  color: #3a3834;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+}
+
+button { margin: 0; padding: 0; background: transparent; line-height: 1.5; }
+button::after { border: 0; }
+.page { min-height: 100vh; box-sizing: border-box; }
+.safe-bottom { padding-bottom: calc(32rpx + env(safe-area-inset-bottom)); }
+.section-title { font-size: 32rpx; font-weight: 600; }
+.muted { color: #8a8680; }
+.primary-button {
+  display: flex; align-items: center; justify-content: center;
+  height: 88rpx; border-radius: 44rpx; color: #fff;
+  background: linear-gradient(135deg, #a8b89e, #7f9275);
+  box-shadow: 0 12rpx 28rpx rgba(98, 120, 90, .22);
+}
+.empty { padding: 180rpx 32rpx; text-align: center; color: #aaa49b; }

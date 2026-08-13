@@ -1,0 +1,2 @@
+import { getLetters } from '../../utils/letters'
+Page({ data: { counts: { sent: 0, drafts: 0, favorites: 0 } }, onShow() { const letters = getLetters(); this.setData({ counts: { sent: letters.filter((item) => item.status === 'sent').length, drafts: letters.filter((item) => item.status === 'draft').length, favorites: letters.filter((item) => item.favorited).length } }) }, open(event: WechatMiniprogram.BaseEvent) { wx.setStorageSync('mailbox_filter', event.currentTarget.dataset.filter); wx.switchTab({ url: '/pages/mailbox/mailbox' }) } })

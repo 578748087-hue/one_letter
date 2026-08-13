@@ -1,0 +1,47 @@
+<view class="page compose safe-bottom">
+  <view class="topbar">
+    <picker class="template-picker" mode="selector" range="{{templateNames}}" value="{{templateIndex}}" bindchange="changeTemplate">
+      <view>{{templateNames[templateIndex]}}⌄</view>
+    </picker>
+    <button class="done" bindtap="finish">完成</button>
+  </view>
+
+  <view class="letter-card">
+    <image class="paper-bg" src="{{stationery.image}}" mode="aspectFill" />
+    <text class="char-count">共 {{letter.content.length}} 字</text>
+    <textarea class="letter-input" style="font-family:{{fontFamily}};color:{{textColor}};text-align:{{textAlign}};font-size:{{fontSize}}rpx" value="{{letter.content}}" placeholder="在这里写下你想说的话..." maxlength="-1" auto-height bindinput="inputContent" />
+    <view class="footer" style="color:{{textColor}}">
+      <input value="{{letter.signature}}" placeholder="署名" bindinput="inputSignature" />
+      <input value="{{letter.dateText}}" placeholder="日期" bindinput="inputDate" />
+    </view>
+  </view>
+
+  <view class="toolbar">
+    <button data-panel="stationery" bindtap="showPanel"><text>▤</text><text>信纸</text></button>
+    <button data-panel="font" bindtap="showPanel"><text>字</text><text>字体</text></button>
+    <button data-panel="color" bindtap="showPanel"><text>◉</text><text>颜色</text></button>
+    <button data-panel="layout" bindtap="showPanel"><text>☷</text><text>排版</text></button>
+  </view>
+
+  <view class="mask" wx:if="{{panel}}" bindtap="closePanel">
+    <view class="sheet" catchtap="stop">
+      <text class="sheet-title">{{panel === 'stationery' ? '选择信纸' : panel === 'font' ? '选择字体' : panel === 'color' ? '文字颜色' : '排版方式'}}</text>
+      <scroll-view class="sheet-scroll" scroll-y>
+        <view class="paper-grid" wx:if="{{panel === 'stationery'}}">
+          <view class="paper-option {{letter.stationeryId === item.id ? 'selected' : ''}}" wx:for="{{stationeryOptions}}" wx:key="id" data-key="stationeryId" data-value="{{item.id}}" bindtap="selectOption"><image src="{{item.image}}" mode="aspectFill" /></view>
+        </view>
+        <view wx:elif="{{panel === 'font'}}">
+          <button class="text-option {{letter.fontId === item.id ? 'selected-text' : ''}}" wx:for="{{fonts}}" wx:key="id" style="font-family:{{item.value}}" data-key="fontId" data-value="{{item.id}}" bindtap="selectOption">{{item.name}} · 写一封信</button>
+        </view>
+        <view class="color-row" wx:elif="{{panel === 'color'}}">
+          <view class="color-dot {{letter.colorId === item.id ? 'selected-color' : ''}}" wx:for="{{colors}}" wx:key="id" style="background:{{item.value}}" data-key="colorId" data-value="{{item.id}}" bindtap="selectOption" />
+        </view>
+        <block wx:else>
+          <view class="option-row"><button class="choice {{letter.layoutId === item.id ? 'selected-text' : ''}}" wx:for="{{layouts}}" wx:key="id" data-key="layoutId" data-value="{{item.id}}" bindtap="selectOption">{{item.name}}</button></view>
+          <text class="sub-title">字体大小</text>
+          <view class="option-row"><button class="choice {{letter.fontSizeId === item.id ? 'selected-text' : ''}}" wx:for="{{sizes}}" wx:key="id" data-key="fontSizeId" data-value="{{item.id}}" bindtap="selectOption">{{item.name}}</button></view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+</view>

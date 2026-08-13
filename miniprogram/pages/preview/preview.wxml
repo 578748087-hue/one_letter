@@ -1,0 +1,9 @@
+<view class="page preview-page safe-bottom">
+  <view class="success" wx:if="{{finished}}">✓ 信件已完成，可以转发给朋友了</view>
+  <view class="letter-card">
+    <image class="paper-bg" src="{{stationery.image}}" mode="aspectFill" />
+    <text class="content" style="font-family:{{fontFamily}};color:{{textColor}};text-align:{{textAlign}};font-size:{{fontSize}}rpx">{{letter.content || '这是一封空白信件'}}</text>
+    <view class="footer" style="color:{{textColor}}"><text>{{letter.signature}}</text><text>{{letter.dateText}}</text></view>
+  </view>
+  <view class="actions"><button bindtap="edit">✎<text>编辑</text></button><button open-type="share">➤<text>转发</text></button><button bindtap="favorite">{{letter.favorited ? '★' : '☆'}}<text>收藏</text></button><button class="danger" bindtap="remove">⌫<text>删除</text></button></view>
+</view>

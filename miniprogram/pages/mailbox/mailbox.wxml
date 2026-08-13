@@ -1,0 +1,14 @@
+<view class="page mailbox safe-bottom">
+  <scroll-view class="tabs" scroll-x>
+    <view class="tab-row"><view class="tab {{filter === item.id ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="id" data-id="{{item.id}}" bindtap="changeFilter">{{item.name}}</view></view>
+  </scroll-view>
+  <view class="empty" wx:if="{{letters.length === 0}}">还没有信件，写第一封信吧</view>
+  <view class="list" wx:else>
+    <view class="letter" wx:for="{{letters}}" wx:key="id" data-id="{{item.id}}" bindtap="open">
+      <image class="thumb" src="{{item.image}}" mode="aspectFill" />
+      <view class="info"><text class="title">{{item.displayTitle}}</text><text class="preview">{{item.preview}}</text><text class="date">{{item.displayDate}}</text></view>
+      <view class="actions"><button data-id="{{item.id}}" catchtap="favorite">{{item.favorited ? '★' : '☆'}}</button><button data-id="{{item.id}}" catchtap="edit">编辑</button></view>
+    </view>
+  </view>
+  <button class="fab" bindtap="compose">＋ 写信</button>
+</view>
