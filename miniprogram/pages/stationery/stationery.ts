@@ -1,10 +1,34 @@
-import { STATIONERY } from '../../data/options'
+import { CATEGORIES, STATIONERY } from '../../data/stationery'
+import { getTopInsets } from '../../utils/page'
 
 Page({
-  data: { categories: [{ id: 'all', name: '全部' }, { id: 'minimalist', name: '简约' }, { id: 'nature', name: '自然' }, { id: 'vintage', name: '复古' }], category: 'all', items: STATIONERY },
-  filter(event: WechatMiniprogram.BaseEvent) {
-    const category = event.currentTarget.dataset.id
-    this.setData({ category, items: category === 'all' ? STATIONERY : STATIONERY.filter((item) => item.category === category) })
+  data: {
+    topOffset: 64,
+    categories: CATEGORIES,
+    filter: 'all',
+    papers: STATIONERY,
   },
-  choose(event: WechatMiniprogram.BaseEvent) { wx.navigateTo({ url: `/pages/compose/compose?stationeryId=${event.currentTarget.dataset.id}` }) },
+
+  onLoad() {
+    this.setData({ topOffset: getTopInsets().topOffset })
+  },
+
+  changeFilter(event: WechatMiniprogram.BaseEvent) {
+    const filter = event.currentTarget.dataset.id as string
+    this.setData({
+      filter,
+      papers: filter === 'all' ? STATIONERY : STATIONERY.filter((item) => item.category === filter),
+    })
+  },
+
+  pickStationery(event: WechatMiniprogram.BaseEvent) {
+    const id = event.currentTarget.dataset.id as string
+    wx.navigateTo({ url: `/pages/compose/compose?stationeryId=${id}` })
+  },
+
+  back() {
+    const pages = getCurrentPages()
+    if (pages.length > 1) wx.navigateBack()
+    else wx.switchTab({ url: '/pages/index/index' })
+  },
 })

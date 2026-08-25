@@ -1,0 +1,5 @@
+<view
+  wx:if="{{encoded}}"
+  class="icon"
+  style="width:{{px}}rpx;height:{{px}}rpx;background-image:url('data:image/svg+xml,{{encoded}}')"
+/>

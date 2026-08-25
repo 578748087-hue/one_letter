@@ -1,0 +1,8 @@
+node_modules/
+miniprogram_npm/
+
+# 字体子集化产物，由 scripts/build-fonts.py 生成后上传到字体托管，不入库
+dist/
+
+.DS_Store
+project.private.config.json

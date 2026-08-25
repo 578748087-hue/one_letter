@@ -1,1 +1,7 @@
-{ "navigationBarTitleText": "信件预览" }
+{
+  "usingComponents": {
+    "icon-svg": "/components/icon/icon",
+    "letter-card": "/components/letter-card/letter-card"
+  },
+  "navigationStyle": "custom"
+}

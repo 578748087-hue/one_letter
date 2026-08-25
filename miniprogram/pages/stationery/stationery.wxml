@@ -1,4 +1,42 @@
-<view class="page library safe-bottom">
-  <view class="filters"><view class="filter {{category === item.id ? 'active' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="filter">{{item.name}}</view></view>
-  <view class="grid"><view class="item" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="choose"><image src="{{item.image}}" mode="aspectFill" /><text>{{item.name}}</text></view></view>
+<view class="screen no-nav">
+  <view class="screen-header" style="padding-top:{{topOffset}}px">
+    <view class="icon-btn" hover-class="hover-scale" hover-stay-time="80" bindtap="back">
+      <icon-svg name="back" size="20" color="#3a3834" />
+    </view>
+    <text class="header-title">信纸库</text>
+    <view class="header-spacer" />
+  </view>
+
+  <scroll-view class="filter-pills" scroll-x enable-flex enhanced show-scrollbar="{{false}}">
+    <view class="filter-pills-row">
+      <view
+        class="pill {{filter === item.id ? 'active' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="changeFilter"
+      >{{item.name}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="stationery-grid">
+    <view
+      class="panel-option"
+      wx:for="{{papers}}"
+      wx:key="id"
+      hover-class="hover-scale"
+      hover-stay-time="80"
+      data-id="{{item.id}}"
+      bindtap="pickStationery"
+    >
+      <view class="pattern" style="background:{{item.bg}}">
+        <image class="pattern-img" src="{{item.image}}" mode="aspectFill" />
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{papers.length === 0}}" class="empty-state">
+    <view class="empty-icon"><icon-svg name="empty" size="40" color="#c8c4bd" /></view>
+    <text class="empty-state-text">这个分类还没有信纸</text>
+  </view>
 </view>

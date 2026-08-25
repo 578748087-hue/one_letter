@@ -1,1 +1,6 @@
-{ "navigationBarTitleText": "我的" }
+{
+  "usingComponents": {
+    "icon-svg": "/components/icon/icon"
+  },
+  "navigationStyle": "custom"
+}

@@ -1,1 +1,6 @@
-{ "navigationBarTitleText": "信箱" }
+{
+  "usingComponents": {
+    "icon-svg": "/components/icon/icon"
+  },
+  "navigationStyle": "custom"
+}

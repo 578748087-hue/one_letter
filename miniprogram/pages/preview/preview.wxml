@@ -1,9 +1,82 @@
-<view class="page preview-page safe-bottom">
-  <view class="success" wx:if="{{finished}}">✓ 信件已完成，可以转发给朋友了</view>
-  <view class="letter-card">
-    <image class="paper-bg" src="{{stationery.image}}" mode="aspectFill" />
-    <text class="content" style="font-family:{{fontFamily}};color:{{textColor}};text-align:{{textAlign}};font-size:{{fontSize}}rpx">{{letter.content || '这是一封空白信件'}}</text>
-    <view class="footer" style="color:{{textColor}}"><text>{{letter.signature}}</text><text>{{letter.dateText}}</text></view>
+<view class="screen no-nav preview-screen">
+  <view class="preview-header" style="padding-top:{{topOffset}}px">
+    <view class="icon-btn" hover-class="hover-scale" hover-stay-time="80" bindtap="back">
+      <icon-svg name="back" size="20" color="#3a3834" />
+    </view>
+    <view class="preview-header-actions">
+      <view class="icon-btn ghost" hover-class="hover-fade" bindtap="toggleStar">
+        <icon-svg name="star" size="20" color="{{letter.favorited ? '#c4a35a' : '#3a3834'}}" filled="{{letter.favorited}}" />
+      </view>
+      <view class="icon-btn ghost" hover-class="hover-fade" bindtap="openMore">
+        <icon-svg name="more" size="20" color="#3a3834" />
+      </view>
+    </view>
   </view>
-  <view class="actions"><button bindtap="edit">✎<text>编辑</text></button><button open-type="share">➤<text>转发</text></button><button bindtap="favorite">{{letter.favorited ? '★' : '☆'}}<text>收藏</text></button><button class="danger" bindtap="remove">⌫<text>删除</text></button></view>
+
+  <view class="quick-bar">
+    <view class="quick-bar-btn" hover-class="hover-scale" hover-stay-time="80" bindtap="goHome">
+      <icon-svg name="home" size="16" color="#8a8680" />
+      <text>主页</text>
+    </view>
+    <view class="quick-bar-btn" hover-class="hover-scale" hover-stay-time="80" bindtap="goDrafts">
+      <icon-svg name="draft" size="16" color="#8a8680" />
+      <text>草稿</text>
+    </view>
+  </view>
+
+  <view class="preview-container">
+    <view wx:if="{{finished}}" class="finish-banner">
+      <view class="finish-banner-text">
+        <view class="finish-icon"><icon-svg name="check" size="12" color="#ffffff" /></view>
+        <text>信件已完成，可以分享或保存啦</text>
+      </view>
+    </view>
+
+    <view class="preview-letter-wrap">
+      <view
+        wx:if="{{letter}}"
+        class="preview-letter-scale"
+        style="width:{{scaleBoxWidth}}rpx;height:{{scaleBoxHeight}}rpx"
+      >
+        <view class="preview-letter-inner" style="transform:scale({{cardScale}})">
+          <letter-card letter="{{letter}}" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="preview-actions">
+    <view class="preview-action" hover-class="hover-fade" bindtap="editLetter">
+      <view class="preview-action-icon"><icon-svg name="write" size="22" color="#8a8680" /></view>
+      <text>{{finished ? '继续编辑' : '编辑'}}</text>
+    </view>
+    <button class="preview-action" open-type="share">
+      <view class="preview-action-icon"><icon-svg name="send" size="22" color="#8a8680" /></view>
+      <text>转发</text>
+    </button>
+    <view class="preview-action" hover-class="hover-fade" bindtap="saveLocal">
+      <view class="preview-action-icon"><icon-svg name="download" size="22" color="#8a8680" /></view>
+      <text>本地保存</text>
+    </view>
+    <view class="preview-action" hover-class="hover-fade" bindtap="openMore">
+      <view class="preview-action-icon"><icon-svg name="more" size="22" color="#8a8680" /></view>
+      <text>更多</text>
+    </view>
+  </view>
+
+  <view wx:if="{{moreOpen}}" class="panel-overlay" bindtap="closeMore">
+    <view class="panel-sheet" catchtap="noop">
+      <text class="panel-sheet-title">更多操作</text>
+      <view class="panel-sheet-body">
+        <view class="font-row">
+          <view class="font-option" hover-class="hover-fade" bindtap="shareImage">分享图片</view>
+          <view class="font-option" hover-class="hover-fade" bindtap="editLetter">继续编辑</view>
+          <view class="font-option" hover-class="hover-fade" bindtap="duplicateLetter">复制为新信</view>
+          <view class="font-option danger" hover-class="hover-fade" bindtap="deleteLetter">删除信件</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <canvas id="export-canvas" type="2d" class="export-canvas" />
 </view>

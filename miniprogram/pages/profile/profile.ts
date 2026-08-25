@@ -1,2 +1,26 @@
-import { getLetters } from '../../utils/letters'
-Page({ data: { counts: { sent: 0, drafts: 0, favorites: 0 } }, onShow() { const letters = getLetters(); this.setData({ counts: { sent: letters.filter((item) => item.status === 'sent').length, drafts: letters.filter((item) => item.status === 'draft').length, favorites: letters.filter((item) => item.favorited).length } }) }, open(event: WechatMiniprogram.BaseEvent) { wx.setStorageSync('mailbox_filter', event.currentTarget.dataset.filter); wx.switchTab({ url: '/pages/mailbox/mailbox' }) } })
+import { APP_VERSION } from '../../config/index'
+import { getCounts } from '../../utils/store'
+import { setPendingMailboxFilter } from '../../utils/nav'
+import { getTopInsets, syncTabBar } from '../../utils/page'
+
+Page({
+  data: {
+    topOffset: 64,
+    version: APP_VERSION,
+    counts: getCounts(),
+  },
+
+  onLoad() {
+    this.setData({ topOffset: getTopInsets().topOffset })
+  },
+
+  onShow() {
+    syncTabBar(this, 2)
+    this.setData({ counts: getCounts() })
+  },
+
+  openMailbox(event: WechatMiniprogram.BaseEvent) {
+    setPendingMailboxFilter(event.currentTarget.dataset.filter as string)
+    wx.switchTab({ url: '/pages/mailbox/mailbox' })
+  },
+})

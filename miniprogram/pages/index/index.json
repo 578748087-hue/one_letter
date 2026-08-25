@@ -1,1 +1,7 @@
-{ "navigationBarTitleText": "写信" }
+{
+  "usingComponents": {
+    "icon-svg": "/components/icon/icon"
+  },
+  "navigationStyle": "custom",
+  "backgroundColor": "#fffaf2"
+}

@@ -1,1 +1,6 @@
-{ "navigationBarTitleText": "信纸库" }
+{
+  "usingComponents": {
+    "icon-svg": "/components/icon/icon"
+  },
+  "navigationStyle": "custom"
+}

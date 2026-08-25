@@ -1,0 +1,10 @@
+<view class="letter-card" style="background:{{bg}}">
+  <view class="pattern">
+    <image class="pattern-img" src="{{image}}" mode="aspectFill" />
+  </view>
+  <text class="content" style="{{contentStyle}}">{{content}}</text>
+  <view class="letter-footer" style="{{footerStyle}}">
+    <text wx:if="{{signature}}" class="letter-signature">{{signature}}</text>
+    <text class="letter-date">{{dateText}}</text>
+  </view>
+</view>

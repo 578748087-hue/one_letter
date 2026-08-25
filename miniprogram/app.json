@@ -1,13 +1,14 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/mailbox/mailbox",
+    "pages/profile/profile",
     "pages/compose/compose",
     "pages/stationery/stationery",
-    "pages/mailbox/mailbox",
-    "pages/preview/preview",
-    "pages/profile/profile"
+    "pages/preview/preview"
   ],
   "window": {
+    "navigationStyle": "custom",
     "navigationBarBackgroundColor": "#fdfbf7",
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "写信",
@@ -15,9 +16,10 @@
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#9a9690",
-    "selectedColor": "#7a8770",
-    "backgroundColor": "#fffdf9",
+    "custom": true,
+    "color": "#b0aca6",
+    "selectedColor": "#3a3834",
+    "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
       { "pagePath": "pages/index/index", "text": "首页" },

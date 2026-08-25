@@ -1,0 +1,18 @@
+<view class="bottom-nav">
+  <view class="nav-item {{selected === 0 ? 'active' : ''}}" data-index="0" data-path="/pages/index/index" bindtap="switchTab">
+    <icon-svg name="{{selected === 0 ? 'homeFilled' : 'home'}}" size="22" color="{{selected === 0 ? activeColor : inactiveColor}}" />
+    <text>首页</text>
+  </view>
+  <view class="nav-item {{selected === 1 ? 'active' : ''}}" data-index="1" data-path="/pages/mailbox/mailbox" bindtap="switchTab">
+    <icon-svg name="mailbox" size="22" color="{{selected === 1 ? activeColor : inactiveColor}}" />
+    <text>信箱</text>
+  </view>
+  <view class="nav-item" data-path="compose" bindtap="switchTab">
+    <icon-svg name="write" size="22" color="{{inactiveColor}}" />
+    <text>写信</text>
+  </view>
+  <view class="nav-item {{selected === 2 ? 'active' : ''}}" data-index="2" data-path="/pages/profile/profile" bindtap="switchTab">
+    <icon-svg name="profile" size="22" color="{{selected === 2 ? activeColor : inactiveColor}}" />
+    <text>我的</text>
+  </view>
+</view>

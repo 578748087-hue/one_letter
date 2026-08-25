@@ -1,45 +1,202 @@
-<view class="page compose safe-bottom">
-  <view class="topbar">
-    <picker class="template-picker" mode="selector" range="{{templateNames}}" value="{{templateIndex}}" bindchange="changeTemplate">
-      <view>{{templateNames[templateIndex]}}⌄</view>
-    </picker>
-    <button class="done" bindtap="finish">完成</button>
-  </view>
-
-  <view class="letter-card">
-    <image class="paper-bg" src="{{stationery.image}}" mode="aspectFill" />
-    <text class="char-count">共 {{letter.content.length}} 字</text>
-    <textarea class="letter-input" style="font-family:{{fontFamily}};color:{{textColor}};text-align:{{textAlign}};font-size:{{fontSize}}rpx" value="{{letter.content}}" placeholder="在这里写下你想说的话..." maxlength="-1" auto-height bindinput="inputContent" />
-    <view class="footer" style="color:{{textColor}}">
-      <input value="{{letter.signature}}" placeholder="署名" bindinput="inputSignature" />
-      <input value="{{letter.dateText}}" placeholder="日期" bindinput="inputDate" />
+<view class="screen no-nav compose-screen">
+  <view class="compose-header" style="padding-top:{{topOffset}}px">
+    <view class="icon-btn" hover-class="hover-scale" hover-stay-time="80" bindtap="back">
+      <icon-svg name="back" size="20" color="#3a3834" />
+    </view>
+    <view class="compose-title-wrap">
+      <input
+        class="compose-title-input"
+        placeholder="信件名称"
+        placeholder-class="compose-title-placeholder"
+        value="{{title}}"
+        maxlength="32"
+        bindinput="inputTitle"
+      />
+    </view>
+    <view class="compose-header-actions">
+      <view class="compose-save-btn" hover-class="hover-fade" bindtap="saveDraft">保存</view>
+      <view class="action-btn" hover-class="hover-fade" bindtap="finish">完成</view>
     </view>
   </view>
 
-  <view class="toolbar">
-    <button data-panel="stationery" bindtap="showPanel"><text>▤</text><text>信纸</text></button>
-    <button data-panel="font" bindtap="showPanel"><text>字</text><text>字体</text></button>
-    <button data-panel="color" bindtap="showPanel"><text>◉</text><text>颜色</text></button>
-    <button data-panel="layout" bindtap="showPanel"><text>☷</text><text>排版</text></button>
+  <view class="quick-bar">
+    <view class="quick-bar-btn" hover-class="hover-scale" hover-stay-time="80" bindtap="goHome">
+      <icon-svg name="home" size="16" color="#8a8680" />
+      <text>主页</text>
+    </view>
   </view>
 
-  <view class="mask" wx:if="{{panel}}" bindtap="closePanel">
-    <view class="sheet" catchtap="stop">
-      <text class="sheet-title">{{panel === 'stationery' ? '选择信纸' : panel === 'font' ? '选择字体' : panel === 'color' ? '文字颜色' : '排版方式'}}</text>
-      <scroll-view class="sheet-scroll" scroll-y>
-        <view class="paper-grid" wx:if="{{panel === 'stationery'}}">
-          <view class="paper-option {{letter.stationeryId === item.id ? 'selected' : ''}}" wx:for="{{stationeryOptions}}" wx:key="id" data-key="stationeryId" data-value="{{item.id}}" bindtap="selectOption"><image src="{{item.image}}" mode="aspectFill" /></view>
+  <view class="compose-letter-wrap">
+    <view class="letter-card compose-letter-card" style="background:{{stationery.bg}}">
+      <view class="pattern">
+        <image class="pattern-img" src="{{stationery.image}}" mode="aspectFill" />
+      </view>
+
+      <text class="char-count">共 {{charCount}} 字</text>
+
+      <scroll-view class="compose-content" scroll-y>
+        <!--
+          textarea 是原生组件，不认 wx.loadFontFace 加载的字体，打字时只能是系统字体。
+          所以失焦后换成 text 渲染，让信件平时保持手写体的样子。
+        -->
+        <textarea
+          wx:if="{{editing}}"
+          class="compose-textarea"
+          style="{{contentStyle}}"
+          placeholder="在这里写下你想说的话..."
+          placeholder-style="{{placeholderStyle}}"
+          value="{{content}}"
+          maxlength="-1"
+          auto-height
+          focus="{{true}}"
+          cursor="{{cursor}}"
+          adjust-position="{{true}}"
+          hold-keyboard
+          bindinput="inputContent"
+          bindblur="stopEditing"
+        />
+        <view
+          wx:else
+          class="compose-textarea compose-content-view"
+          style="{{contentStyle}}"
+          bindtap="startEditing"
+        >
+          <text wx:if="{{content}}">{{content}}</text>
+          <text wx:else style="{{placeholderStyle}}">在这里写下你想说的话...</text>
         </view>
-        <view wx:elif="{{panel === 'font'}}">
-          <button class="text-option {{letter.fontId === item.id ? 'selected-text' : ''}}" wx:for="{{fonts}}" wx:key="id" style="font-family:{{item.value}}" data-key="fontId" data-value="{{item.id}}" bindtap="selectOption">{{item.name}} · 写一封信</button>
+      </scroll-view>
+
+      <view class="letter-footer" style="{{footerStyle}}">
+        <input
+          class="letter-footer-field"
+          placeholder="署名"
+          placeholder-style="{{footerPlaceholderStyle}}"
+          value="{{signature}}"
+          bindinput="inputSignature"
+        />
+        <input
+          class="letter-footer-field"
+          placeholder="{{datePlaceholder}}"
+          placeholder-style="{{footerPlaceholderStyle}}"
+          value="{{dateText}}"
+          bindinput="inputDate"
+        />
+      </view>
+    </view>
+  </view>
+
+  <view class="compose-toolbar">
+    <view class="toolbar-btn {{panel === 'stationery' ? 'active' : ''}}" data-panel="stationery" bindtap="togglePanel">
+      <icon-svg name="paper" size="20" color="{{panel === 'stationery' ? '#7a8770' : '#8a8680'}}" />
+      <text>信纸</text>
+    </view>
+    <view class="toolbar-btn {{panel === 'font' ? 'active' : ''}}" data-panel="font" bindtap="togglePanel">
+      <icon-svg name="font" size="20" color="{{panel === 'font' ? '#7a8770' : '#8a8680'}}" />
+      <text>字体</text>
+    </view>
+    <view class="toolbar-btn {{panel === 'color' ? 'active' : ''}}" data-panel="color" bindtap="togglePanel">
+      <icon-svg name="palette" size="20" color="{{panel === 'color' ? '#7a8770' : '#8a8680'}}" />
+      <text>颜色</text>
+    </view>
+    <view class="toolbar-btn {{panel === 'layout' ? 'active' : ''}}" data-panel="layout" bindtap="togglePanel">
+      <icon-svg name="layout" size="20" color="{{panel === 'layout' ? '#7a8770' : '#8a8680'}}" />
+      <text>排版</text>
+    </view>
+  </view>
+
+  <view wx:if="{{panel}}" class="panel-overlay" bindtap="closePanel">
+    <view class="panel-sheet" catchtap="noop">
+      <text class="panel-sheet-title">{{panelTitle}}</text>
+
+      <scroll-view class="panel-sheet-body" scroll-y>
+        <view wx:if="{{panel === 'stationery'}}" class="panel-grid">
+          <view
+            class="panel-option {{item.id === stationeryId ? 'selected' : ''}}"
+            wx:for="{{stationeryOptions}}"
+            wx:key="id"
+            data-set="stationeryId"
+            data-value="{{item.id}}"
+            bindtap="selectOption"
+          >
+            <view class="pattern" style="background:{{item.bg}}">
+              <image class="pattern-img" src="{{item.image}}" mode="aspectFill" />
+            </view>
+            <view wx:if="{{item.id === stationeryId}}" class="panel-option-check">
+              <icon-svg name="check" size="12" color="#ffffff" />
+            </view>
+          </view>
         </view>
-        <view class="color-row" wx:elif="{{panel === 'color'}}">
-          <view class="color-dot {{letter.colorId === item.id ? 'selected-color' : ''}}" wx:for="{{colors}}" wx:key="id" style="background:{{item.value}}" data-key="colorId" data-value="{{item.id}}" bindtap="selectOption" />
-        </view>
-        <block wx:else>
-          <view class="option-row"><button class="choice {{letter.layoutId === item.id ? 'selected-text' : ''}}" wx:for="{{layouts}}" wx:key="id" data-key="layoutId" data-value="{{item.id}}" bindtap="selectOption">{{item.name}}</button></view>
-          <text class="sub-title">字体大小</text>
-          <view class="option-row"><button class="choice {{letter.fontSizeId === item.id ? 'selected-text' : ''}}" wx:for="{{sizes}}" wx:key="id" data-key="fontSizeId" data-value="{{item.id}}" bindtap="selectOption">{{item.name}}</button></view>
+
+        <block wx:elif="{{panel === 'font'}}">
+          <view class="font-group" wx:for="{{fontGroups}}" wx:key="label" wx:for-item="group">
+            <text class="font-group-label">{{group.label}}</text>
+            <view
+              class="font-option font-pick {{item.id === fontId ? 'selected' : ''}}"
+              wx:for="{{group.items}}"
+              wx:key="id"
+              data-set="fontId"
+              data-value="{{item.id}}"
+              bindtap="selectOption"
+            >
+              <text
+                class="font-pick-sample"
+                style="font-family:'{{item.family}}'"
+              >{{item.name}} — 写一封信，让思绪慢下来</text>
+              <text
+                wx:if="{{fontStates[item.id] === 'loading'}}"
+                class="font-pick-state"
+              >下载中</text>
+              <text
+                wx:elif="{{fontStates[item.id] === 'failed'}}"
+                class="font-pick-state failed"
+              >失败</text>
+            </view>
+          </view>
+        </block>
+
+        <block wx:elif="{{panel === 'color'}}">
+          <view class="color-group" wx:for="{{colorGroups}}" wx:key="label" wx:for-item="group">
+            <text class="font-group-label">{{group.label}}</text>
+            <view class="color-row">
+              <view
+                class="color-dot {{group.light ? 'color-dot-light' : ''}} {{item.id === colorId ? 'selected' : ''}}"
+                wx:for="{{group.items}}"
+                wx:key="id"
+                style="background:{{item.value}}"
+                data-set="colorId"
+                data-value="{{item.id}}"
+                bindtap="selectOption"
+              />
+            </view>
+          </view>
+        </block>
+
+        <block wx:elif="{{panel === 'layout'}}">
+          <view class="panel-section">
+            <view class="font-row">
+              <view
+                class="font-option {{item.id === layoutId ? 'selected' : ''}}"
+                wx:for="{{layouts}}"
+                wx:key="id"
+                data-set="layoutId"
+                data-value="{{item.id}}"
+                bindtap="selectOption"
+              >{{item.name}}</view>
+            </view>
+          </view>
+          <view class="panel-section">
+            <text class="font-group-label">字体大小</text>
+            <view class="font-row">
+              <view
+                class="font-option {{item.id === fontSizeId ? 'selected' : ''}}"
+                wx:for="{{fontSizes}}"
+                wx:key="id"
+                data-set="fontSizeId"
+                data-value="{{item.id}}"
+                bindtap="selectOption"
+              >{{item.name}}</view>
+            </view>
+          </view>
         </block>
       </scroll-view>
     </view>

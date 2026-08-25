@@ -1,14 +1,89 @@
-<view class="page mailbox safe-bottom">
-  <scroll-view class="tabs" scroll-x>
-    <view class="tab-row"><view class="tab {{filter === item.id ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="id" data-id="{{item.id}}" bindtap="changeFilter">{{item.name}}</view></view>
-  </scroll-view>
-  <view class="empty" wx:if="{{letters.length === 0}}">还没有信件，写第一封信吧</view>
-  <view class="list" wx:else>
-    <view class="letter" wx:for="{{letters}}" wx:key="id" data-id="{{item.id}}" bindtap="open">
-      <image class="thumb" src="{{item.image}}" mode="aspectFill" />
-      <view class="info"><text class="title">{{item.displayTitle}}</text><text class="preview">{{item.preview}}</text><text class="date">{{item.displayDate}}</text></view>
-      <view class="actions"><button data-id="{{item.id}}" catchtap="favorite">{{item.favorited ? '★' : '☆'}}</button><button data-id="{{item.id}}" catchtap="edit">编辑</button></view>
-    </view>
+<view class="screen {{selectMode ? 'mailbox-selecting' : ''}}">
+  <view wx:if="{{selectMode}}" class="screen-header mailbox-select-header" style="padding-top:{{topOffset}}px">
+    <view class="text-btn" hover-class="hover-fade" bindtap="cancelSelect">取消</view>
+    <text class="header-title">已选 {{selectedIds.length}} 项</text>
+    <view class="text-btn" hover-class="hover-fade" bindtap="toggleAll">{{allSelected ? '取消全选' : '全选'}}</view>
   </view>
-  <button class="fab" bindtap="compose">＋ 写信</button>
+  <view wx:else class="screen-header" style="padding-top:{{topOffset}}px">
+    <text class="header-title">信箱</text>
+    <view wx:if="{{hasManageLetters}}" class="text-btn" hover-class="hover-fade" bindtap="enterSelect">管理</view>
+    <view wx:else class="header-spacer" />
+  </view>
+
+  <scroll-view class="mailbox-tabs" scroll-x enable-flex enhanced show-scrollbar="{{false}}">
+    <view class="mailbox-tabs-row">
+      <view
+        class="mailbox-tab {{filter === item.id ? 'active' : ''}}"
+        wx:for="{{tabs}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="changeFilter"
+      >
+        <text>{{item.name}}</text>
+        <text class="mailbox-tab-count">{{item.count}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="letter-list">
+    <view wx:if="{{letters.length === 0}}" class="empty-state">
+      <view class="empty-icon"><icon-svg name="empty" size="40" color="#c8c4bd" /></view>
+      <text class="empty-state-text">{{emptyMessage}}</text>
+    </view>
+
+    <block wx:else>
+      <view
+        class="letter-item {{item.selected ? 'selected' : ''}}"
+        wx:for="{{letters}}"
+        wx:key="id"
+        hover-class="hover-scale"
+        hover-stay-time="80"
+        data-id="{{item.id}}"
+        bindtap="tapItem"
+      >
+        <view wx:if="{{selectMode}}" class="letter-check {{item.selected ? 'checked' : ''}}">
+          <icon-svg wx:if="{{item.selected}}" name="check" size="14" color="#ffffff" />
+        </view>
+
+        <view
+          wx:if="{{!selectMode && !isDeletedView}}"
+          class="letter-item-star {{item.favorited ? 'favorited' : ''}}"
+          data-id="{{item.id}}"
+          catchtap="toggleStar"
+        >
+          <icon-svg name="star" size="18" color="{{item.favorited ? '#c4a35a' : '#c8c4bd'}}" filled="{{item.favorited}}" />
+        </view>
+
+        <view class="thumb" style="background:{{item.bg}}">
+          <image class="pattern-img" src="{{item.image}}" mode="aspectFill" />
+        </view>
+
+        <view class="info">
+          <text class="title">{{item.displayTitle}}</text>
+          <text class="preview">{{item.preview}}</text>
+          <text class="date">{{item.displayDate}}</text>
+        </view>
+
+        <view
+          wx:if="{{!selectMode && !isDeletedView}}"
+          class="letter-edit-btn letter-item-edit"
+          hover-class="hover-fade"
+          data-id="{{item.id}}"
+          catchtap="editLetter"
+        >继续编辑</view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{selectMode}}" class="mailbox-batch-bar">
+    <view
+      class="batch-delete-btn {{selectedIds.length === 0 ? 'disabled' : ''}}"
+      hover-class="hover-fade"
+      bindtap="batchDelete"
+    >{{batchDeleteLabel}}</view>
+  </view>
+  <view wx:else class="fab" hover-class="hover-fade" bindtap="compose">
+    <icon-svg name="plus" size="16" color="#ffffff" />
+    <text>写信</text>
+  </view>
 </view>

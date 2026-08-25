@@ -1,35 +1,107 @@
-<view class="page home safe-bottom">
-  <image class="home-bg" src="/assets/home-bg.png" mode="aspectFill" />
-  <view class="content">
-    <text class="greeting">{{greeting}}</text>
-    <image class="headline" src="/assets/home-headline.png" mode="widthFix" />
+<view class="screen home-screen">
+  <view class="home-bg">
+    <image class="home-bg-img" src="/assets/home-bg.png" mode="aspectFill" />
+    <view class="home-bg-overlay" />
+  </view>
 
-    <button class="start-card glass" bindtap="compose">
-      <view class="quill">✎</view>
-      <view class="start-copy"><text class="start-title">开始写信</text><text>记录此刻的思绪</text></view>
-      <text class="chevron">›</text>
-    </button>
+  <view class="home-content">
+    <view style="height:{{statusBarHeight}}px" />
 
-    <view class="quick-grid">
-      <button class="quick glass" data-filter="draft" bindtap="openMailbox"><text class="quick-icon">⌑</text><text>草稿箱</text><text class="count">{{counts.drafts}}</text></button>
-      <button class="quick glass" data-filter="sent" bindtap="openMailbox"><text class="quick-icon">✉</text><text>已寄出</text><text class="count">{{counts.sent}}</text></button>
-      <button class="quick glass" data-filter="favorite" bindtap="openMailbox"><text class="quick-icon">☆</text><text>收藏</text><text class="count">{{counts.favorites}}</text></button>
+    <view class="home-header">
+      <text class="home-greeting-en">{{greetingEn}}</text>
     </view>
 
-    <view class="section-head"><text class="section-title">信纸库</text><text class="more" bindtap="openStationery">查看全部 ›</text></view>
-    <view class="papers">
-      <view class="paper" wx:for="{{stationery}}" wx:key="id" data-id="{{item.id}}" bindtap="chooseStationery">
-        <image src="{{item.image}}" mode="aspectFill" />
+    <view class="home-headline">
+      <image class="home-headline-img" src="/assets/home-headline.png" mode="widthFix" />
+    </view>
+
+    <view class="start-card glass-card" hover-class="hover-scale" hover-stay-time="80" bindtap="compose">
+      <view class="start-icon-circle">
+        <icon-svg name="quill" size="22" color="#ffffff" />
+      </view>
+      <view class="start-text">
+        <text class="start-title">开始写信</text>
+        <text class="start-sub">记录此刻的思绪</text>
+      </view>
+      <view class="start-chevron">
+        <icon-svg name="chevronRight" size="18" color="#b0aca6" />
       </view>
     </view>
 
-    <view class="section-head"><text class="section-title">写信灵感</text></view>
-    <scroll-view class="inspiration-scroll" scroll-x enhanced show-scrollbar="false">
-      <view class="inspiration-row">
-        <view class="inspiration inspiration-{{index}}" wx:for="{{inspirations}}" wx:key="id" data-id="{{item.id}}" bindtap="useTemplate">
-          <text class="inspiration-title">{{item.name}}</text><text class="inspiration-copy">落笔，让心意慢慢抵达</text><text class="arrow">›</text>
+    <view class="home-quick-grid">
+      <view class="quick-tile glass-card" hover-class="hover-scale" hover-stay-time="80" data-filter="drafts" bindtap="openMailbox">
+        <view class="tile-icon-circle"><icon-svg name="draft" size="18" color="#c9956c" /></view>
+        <text class="tile-label">草稿箱</text>
+        <text class="tile-count">{{counts.drafts}}</text>
+      </view>
+      <view class="quick-tile glass-card" hover-class="hover-scale" hover-stay-time="80" data-filter="all" bindtap="openMailbox">
+        <view class="tile-icon-circle"><icon-svg name="envelope" size="18" color="#c9956c" /></view>
+        <text class="tile-label">信箱</text>
+        <text class="tile-count">{{counts.mailbox}}</text>
+      </view>
+      <view class="quick-tile glass-card" hover-class="hover-scale" hover-stay-time="80" data-filter="favorited" bindtap="openMailbox">
+        <view class="tile-icon-circle"><icon-svg name="star" size="18" color="#c9956c" /></view>
+        <text class="tile-label">收藏</text>
+        <text class="tile-count">{{counts.favorites}}</text>
+      </view>
+      <view class="quick-tile glass-card" hover-class="hover-scale" hover-stay-time="80" bindtap="comingSoon">
+        <view class="tile-icon-circle"><icon-svg name="tag" size="18" color="#c9956c" /></view>
+        <text class="tile-label">标签</text>
+        <text class="tile-sub">{{counts.tags}}</text>
+      </view>
+    </view>
+
+    <view class="home-stationery-section">
+      <view class="section-header-row">
+        <text class="section-title-inline">信纸库</text>
+        <view class="section-link" hover-class="hover-fade" bindtap="openStationery">
+          <text>查看全部</text>
+          <icon-svg name="chevronRight" size="14" color="#b0aca6" />
         </view>
       </view>
-    </scroll-view>
+      <view class="home-stationery-scroll">
+        <view
+          class="stationery-thumb"
+          wx:for="{{stationery}}"
+          wx:key="id"
+          hover-class="hover-scale"
+          hover-stay-time="80"
+          data-id="{{item.id}}"
+          bindtap="pickStationery"
+        >
+          <view class="pattern" style="background:{{item.bg}}">
+            <image class="pattern-img" src="{{item.image}}" mode="aspectFill" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="home-banner-section">
+      <view class="section-header-row">
+        <text class="section-title-inline">写信灵感</text>
+      </view>
+      <scroll-view class="banner-scroll" scroll-x enable-flex enhanced show-scrollbar="{{false}}">
+        <view class="banner-row">
+          <view
+            class="time-banner time-banner--{{item.theme}}"
+            wx:for="{{banners}}"
+            wx:key="id"
+            hover-class="hover-scale"
+            hover-stay-time="80"
+            data-template="{{item.templateId}}"
+            bindtap="composeTemplate"
+          >
+            <view class="time-banner-bg" />
+            <view class="time-banner-text">
+              <text class="time-banner-title">{{item.title}}</text>
+              <text class="time-banner-sub">{{item.subtitle}}</text>
+            </view>
+            <view class="time-banner-arrow">
+              <icon-svg name="chevronRight" size="16" color="#ffffff" />
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
   </view>
 </view>

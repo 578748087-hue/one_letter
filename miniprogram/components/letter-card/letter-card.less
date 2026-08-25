@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+
+.letter-card {
+  width: var(--card-width, 678rpx);
+  height: var(--card-height, 1205rpx);
+  margin: 0 auto;
+  border-radius: 48rpx;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 16rpx 64rpx rgba(58, 56, 52, 0.1);
+  border: 1rpx solid rgba(58, 56, 52, 0.04);
+  /* 信纸图未加载完时仍保留纸面底色 */
+  background: #fdfbf7;
+}
+
+.pattern {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.pattern-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 72rpx 56rpx 144rpx;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 100%;
+}
+
+.letter-footer {
+  position: absolute;
+  bottom: 56rpx;
+  right: 56rpx;
+  left: 56rpx;
+  z-index: 2;
+  text-align: right;
+  line-height: 1.55;
+}
+
+.letter-signature {
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.letter-date {
+  display: block;
+}

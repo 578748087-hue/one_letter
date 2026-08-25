@@ -1,37 +1,61 @@
-import { STATIONERY, TEMPLATES } from '../../data/options'
-import { getLetters } from '../../utils/letters'
+import { STATIONERY } from '../../data/stationery'
+import { BANNER_TEMPLATES } from '../../data/templates'
+import { getCounts } from '../../utils/store'
+import { setPendingMailboxFilter } from '../../utils/nav'
+import { getTopInsets, syncTabBar } from '../../utils/page'
+
+function getGreetingEn(): string {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good Morning'
+  if (hour < 18) return 'Good Afternoon'
+  return 'Good Evening'
+}
 
 Page({
   data: {
-    greeting: '',
-    counts: { drafts: 0, sent: 0, favorites: 0 },
+    statusBarHeight: 20,
+    greetingEn: getGreetingEn(),
+    counts: getCounts(),
     stationery: STATIONERY.slice(0, 4),
-    inspirations: TEMPLATES.filter((item) => item.id !== 'blank'),
+    banners: BANNER_TEMPLATES,
+  },
+
+  onLoad() {
+    this.setData({ statusBarHeight: getTopInsets().statusBarHeight })
   },
 
   onShow() {
-    const hour = new Date().getHours()
-    const letters = getLetters()
+    syncTabBar(this, 0)
     this.setData({
-      greeting: hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening',
-      counts: {
-        drafts: letters.filter((item) => item.status === 'draft').length,
-        sent: letters.filter((item) => item.status === 'sent').length,
-        favorites: letters.filter((item) => item.favorited).length,
-      },
+      greetingEn: getGreetingEn(),
+      counts: getCounts(),
     })
   },
 
-  compose() { wx.navigateTo({ url: '/pages/compose/compose' }) },
+  compose() {
+    wx.navigateTo({ url: '/pages/compose/compose' })
+  },
+
+  composeTemplate(event: WechatMiniprogram.BaseEvent) {
+    const templateId = event.currentTarget.dataset.template as string
+    wx.navigateTo({ url: `/pages/compose/compose?templateId=${templateId}` })
+  },
+
   openMailbox(event: WechatMiniprogram.BaseEvent) {
-    wx.setStorageSync('mailbox_filter', event.currentTarget.dataset.filter)
+    setPendingMailboxFilter(event.currentTarget.dataset.filter as string)
     wx.switchTab({ url: '/pages/mailbox/mailbox' })
   },
-  openStationery() { wx.navigateTo({ url: '/pages/stationery/stationery' }) },
-  chooseStationery(event: WechatMiniprogram.BaseEvent) {
-    wx.navigateTo({ url: `/pages/compose/compose?stationeryId=${event.currentTarget.dataset.id}` })
+
+  openStationery() {
+    wx.navigateTo({ url: '/pages/stationery/stationery' })
   },
-  useTemplate(event: WechatMiniprogram.BaseEvent) {
-    wx.navigateTo({ url: `/pages/compose/compose?templateId=${event.currentTarget.dataset.id}` })
+
+  pickStationery(event: WechatMiniprogram.BaseEvent) {
+    const id = event.currentTarget.dataset.id as string
+    wx.navigateTo({ url: `/pages/compose/compose?stationeryId=${id}` })
+  },
+
+  comingSoon() {
+    wx.showToast({ title: '功能待开放', icon: 'none' })
   },
 })
