@@ -28,14 +28,20 @@ function setStatus(fontId: string, next: FontStatus) {
 }
 
 /** 云存储上的文件名含中文，必须编码后才能作为 URL 使用。 */
-function fontUrl(font: FontOption): string {
+function fontUrl(font: FontOption, bustCache = false): string {
   const file = FONT_FILES[font.id]
-  return file ? `${FONT_BASE_URL}/${encodeURIComponent(file)}` : ''
+  if (!file) return ''
+  const url = `${FONT_BASE_URL}/${encodeURIComponent(file)}`
+  // 命中 ERR_CACHE_MISS（常见于开发者工具热重载后磁盘缓存条目失效）时，
+  // 带一个查询参数绕开命中失败的缓存条目，强制走一次真实网络请求。
+  return bustCache ? `${url}?_retry=${Date.now()}` : url
 }
 
 const TIMEOUT_FLAG = 'timeout'
+/** ERR_CACHE_MISS 多为缓存层瞬时故障，重试一次即可恢复，不必直接判定失败。 */
+const MAX_ATTEMPTS = 2
 
-function applyFont(font: FontOption): Promise<void> {
+function applyFont(font: FontOption, bustCache = false): Promise<void> {
   return new Promise((resolve, reject) => {
     let settled = false
     const timer = setTimeout(() => {
@@ -47,7 +53,7 @@ function applyFont(font: FontOption): Promise<void> {
       family: font.family,
       global: true,
       scopes: ['webview', 'native'],
-      source: `url("${fontUrl(font)}")`,
+      source: `url("${fontUrl(font, bustCache)}")`,
       success: () => {
         clearTimeout(timer)
         // 超时后才回来的成功也要认，界面上从「失败」补正成已加载
@@ -60,6 +66,22 @@ function applyFont(font: FontOption): Promise<void> {
       },
     })
   })
+}
+
+/** 除超时外的失败大概率是缓存层瞬时问题，换一次带缓存穿透参数的地址重试。 */
+async function applyFontWithRetry(font: FontOption): Promise<void> {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await applyFont(font, attempt > 1)
+      return
+    } catch (error) {
+      const message = (error as Error).message
+      const isLastAttempt = attempt >= MAX_ATTEMPTS
+      if (message === TIMEOUT_FLAG || isLastAttempt) throw error
+      console.warn(`[font] ${font.id} 第 ${attempt} 次加载失败（${message}），换地址重试`)
+    }
+  }
 }
 
 /**
@@ -122,7 +144,7 @@ export function loadFont(fontId: string): Promise<boolean> {
 
   const task = (async (): Promise<boolean> => {
     try {
-      await applyFont(font)
+      await applyFontWithRetry(font)
       setStatus(font.id, 'loaded')
       return true
     } catch (error) {
